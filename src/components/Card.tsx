@@ -1,8 +1,20 @@
-import React from 'react'
+const Card = (props: {
+  name: string
+  icon: string
+  lvl: number
+  reward: string
+  penalty: string
+  idx: number
+}) => {
 
-const Card = () => {
+
   return (
-    <div>Card</div>
+    <div className="card">
+      <div className="card-icon">{props.icon}</div>
+      <div className="card-lvl"><p>{props.lvl}. szint</p></div>
+      <p>Reward: {props.reward}</p>
+      <p>Penalty: {props.penalty}</p>
+    </div>
   )
 }
 

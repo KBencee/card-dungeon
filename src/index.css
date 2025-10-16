@@ -3,3 +3,50 @@
   margin: 0;
   padding: 0;
 }
+
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card{
+  border: 2px solid black;
+  border-radius: 20px;
+  padding: 20px;
+  margin: 40px;
+  width: 200px;
+  text-align: center;
+  background-color: #f9f9f9;
+  font-size: 20px;
+}
+
+.card-icon{
+  font-size: 100px;
+  margin-bottom: 10px;
+}
+
+.card-lvl{
+  margin-bottom: 20px;
+}
+
+.btns-container{
+  margin: 20px 0px 20px 0px;
+}
+
+.btn{
+  width: 150px;
+  height: 40px;
+}
+
+.dice{
+  font-size: 20px;
+  padding: 20px 20px;
+  border: 1px solid black;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  rotate: 45deg;
+  margin: 20px;
+}
