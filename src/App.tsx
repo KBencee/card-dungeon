@@ -2,6 +2,7 @@ import Card from "./components/Card";
 import cardsData from "../public/cards.json";
 import Buttons from "./components/Buttons";
 import Dice from "./components/Dice";
+import Player from "./components/Player";
 
 const App = () => {
   const randomCard = cardsData[Math.floor(Math.random() * cardsData.length)];
@@ -17,10 +18,14 @@ const App = () => {
           reward={randomCard.reward}
           penalty={randomCard.penalty}
           />
+          <div className="controls-container">
+            <Dice />
+            <Buttons />
+        </div>
       </div>
-      <div>
-        <Dice />
-        <Buttons />
+
+      <div className="player-container">
+        <Player hp={5} maxHp={5} rewards={[]} />
       </div>
     </main>
   )
