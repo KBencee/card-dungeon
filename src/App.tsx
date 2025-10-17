@@ -17,6 +17,33 @@ const App = () => {
     setDiceValue(n);
   };
 
+  const [hp, setHp] = useState<number>(5);
+  const maxHp = 5;
+  const [rewards, setRewards] = useState<string[]>([]);
+
+  const handleFight = () => {
+    if (diceValue === null) 
+      return;
+    if (diceValue >= currentCard.level) {
+      setRewards((prev) => [...prev, currentCard.reward]);
+      setCurrentCard(randomCardFromDeck());
+    } else {
+      const koponya = "💀";
+      const skullCount = (currentCard.penalty.match(new RegExp(koponya, "g")) || []).length;
+      if (skullCount > 0) {
+        setHp((h) => Math.max(0, h - skullCount));
+    }} 
+    setCurrentCard(randomCardFromDeck());
+    setDiceValue(null);
+  };
+
+  const handleFlee = () => {
+    setCurrentCard(randomCardFromDeck());
+    setDiceValue(null);
+  }
+
+  
+
   return (
     <main>
       <div className="cards-container">
@@ -30,7 +57,7 @@ const App = () => {
         />
         <div className="controls-container">
           <Dice value={diceValue} onRoll={rollDice} />
-          <Buttons />
+          <Buttons onFight={handleFight} onFlee={handleFlee}/>
         </div>
       </div>
 
