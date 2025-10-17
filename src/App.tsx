@@ -24,7 +24,7 @@ const App = () => {
   const handleFight = () => {
     if (diceValue === null) 
       return;
-    if (diceValue >= currentCard.level) {
+    if (diceValue > currentCard.level) {
       setRewards((prev) => [...prev, currentCard.reward]);
       setCurrentCard(randomCardFromDeck());
     } else {
