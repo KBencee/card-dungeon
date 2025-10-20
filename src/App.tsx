@@ -23,6 +23,16 @@ const App = () => {
 
   const maxDmg = 5;
 
+  const showWinIfGold = (rewardText: string, count = 1) => {
+    if (rewardText.includes("🥇") && count > 0) {
+      alert("Nyertél!");
+      setHp(maxHp);
+      setRewards([]);
+      setCurrentCard(randomCardFromDeck());
+      setDiceValue(null);
+    }
+  };
+
   const handleFight = () => {
     if (diceValue === null) {
       return;
@@ -54,19 +64,21 @@ const App = () => {
       }
 
       if (rewardSwords > 0) {
-        setRewards((prev) => {
-          const currentSwords = prev.reduce(
-            (acc, r) => acc + ((r.includes("⚔") || r.includes("⚔️")) ? 1 : 0),
-            0
-          );
-          const canAdd = Math.max(0, maxDmg - currentSwords);
-          const toAdd = Math.min(canAdd, rewardSwords);
-          return [...prev, ...Array(toAdd).fill(currentCard.reward)];
-        });
+        const currentSwords = rewards.reduce(
+          (acc, r) => acc + ((r.includes("⚔") || r.includes("⚔️")) ? 1 : 0),
+          0
+        );
+        const canAdd = Math.max(0, maxDmg - currentSwords);
+        const toAdd = Math.min(canAdd, rewardSwords);
+        if (toAdd > 0) {
+          showWinIfGold(currentCard.reward, toAdd);
+          setRewards((prev) => [...prev, ...Array(toAdd).fill(currentCard.reward)]);
+        }
       }
 
       const otherCount = rewardHearts + rewardSwords;
       if (otherCount === 0) {
+        showWinIfGold(currentCard.reward, 1);
         setRewards((prev) => [...prev, currentCard.reward]);
       }
     } else {
