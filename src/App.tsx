@@ -21,10 +21,19 @@ const App = () => {
   const maxHp = 5;
   const [rewards, setRewards] = useState<string[]>([]);
 
+  const maxDmg = 5;
+
   const handleFight = () => {
     if (diceValue === null) {
       return;
     }
+
+    const rawAttack = rewards.reduce(
+      (acc, reward) => acc + (reward.includes("⚔") || reward.includes("⚔️") ? 1 : 0),
+      0
+    );
+    const attackBonus = Math.min(rawAttack, maxDmg);
+    const effectiveRoll = diceValue + attackBonus;
 
     const countOccurrences = (text: string, variants: string[]) =>
       variants.reduce((acc, variant) => acc + (text.split(variant).length - 1), 0);
@@ -33,7 +42,7 @@ const App = () => {
     const swordVariants = ["⚔", "⚔️"];
     const skullVariants = ["💀"];
 
-    if (diceValue > currentCard.level) {
+    if (effectiveRoll > currentCard.level) {
       const rewardHearts = countOccurrences(currentCard.reward, heartVariants);
       const rewardSwords = countOccurrences(currentCard.reward, swordVariants);
 
@@ -45,10 +54,15 @@ const App = () => {
       }
 
       if (rewardSwords > 0) {
-        setRewards((prev) => [
-          ...prev,
-          ...Array(rewardSwords).fill(currentCard.reward),
-        ]);
+        setRewards((prev) => {
+          const currentSwords = prev.reduce(
+            (acc, r) => acc + ((r.includes("⚔") || r.includes("⚔️")) ? 1 : 0),
+            0
+          );
+          const canAdd = Math.max(0, maxDmg - currentSwords);
+          const toAdd = Math.min(canAdd, rewardSwords);
+          return [...prev, ...Array(toAdd).fill(currentCard.reward)];
+        });
       }
 
       const otherCount = rewardHearts + rewardSwords;
