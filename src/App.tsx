@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Card from "./components/Card";
 import cardsData from "../public/cards.json";
 import Buttons from "./components/Buttons";
@@ -22,17 +22,68 @@ const App = () => {
   const [rewards, setRewards] = useState<string[]>([]);
 
   const handleFight = () => {
-    if (diceValue === null) 
+    if (diceValue === null) {
       return;
+    }
+
+    const countOccurrences = (text: string, variants: string[]) =>
+      variants.reduce((acc, variant) => acc + (text.split(variant).length - 1), 0);
+
+    const heartVariants = ["❤️", "♥️", "❤"];
+    const swordVariants = ["⚔", "⚔️"];
+    const skullVariants = ["💀"];
+
     if (diceValue > currentCard.level) {
-      setRewards((prev) => [...prev, currentCard.reward]);
-      setCurrentCard(randomCardFromDeck());
+      const rewardHearts = countOccurrences(currentCard.reward, heartVariants);
+      const rewardSwords = countOccurrences(currentCard.reward, swordVariants);
+
+      if (rewardHearts > 0) {
+        setHp((h) => {
+          const next = Math.min(maxHp, h + rewardHearts);
+          return next;
+        });
+      }
+
+      if (rewardSwords > 0) {
+        setRewards((prev) => [
+          ...prev,
+          ...Array(rewardSwords).fill(currentCard.reward),
+        ]);
+      }
+
+      const otherCount = rewardHearts + rewardSwords;
+      if (otherCount === 0) {
+        setRewards((prev) => [...prev, currentCard.reward]);
+      }
     } else {
-      const koponya = "💀";
-      const skullCount = (currentCard.penalty.match(new RegExp(koponya, "g")) || []).length;
-      if (skullCount > 0) {
-        setHp((h) => Math.max(0, h - skullCount));
-    }} 
+      const heartCount = countOccurrences(currentCard.penalty, heartVariants);
+      const swordCount = countOccurrences(currentCard.penalty, swordVariants);
+      const skullCount = countOccurrences(currentCard.penalty, skullVariants);
+
+      const totalHpLoss = heartCount + skullCount;
+      if (totalHpLoss > 0) {
+        setHp((h) => {
+          const next = Math.max(0, h - totalHpLoss);
+          return next;
+        });
+      }
+
+      if (swordCount > 0) {
+        setRewards((prev) => {
+          let toRemove = swordCount;
+          const next: string[] = [];
+          for (const r of prev) {
+            if (toRemove > 0 && (r.includes("⚔") || r.includes("⚔️"))) {
+              toRemove--;
+              continue;
+            }
+            next.push(r);
+          }
+          return next;
+        });
+      }
+    }
+
     setCurrentCard(randomCardFromDeck());
     setDiceValue(null);
   };
@@ -42,7 +93,15 @@ const App = () => {
     setDiceValue(null);
   }
 
-  
+  useEffect(() => {
+    if (hp <= 0) {
+      alert("Meghaltál... :(");
+      setHp(maxHp);
+      setRewards([]);
+      setCurrentCard(randomCardFromDeck());
+      setDiceValue(null);
+    }
+  }, [hp]);
 
   return (
     <main>
@@ -62,7 +121,7 @@ const App = () => {
       </div>
 
       <div className="player-container">
-        <Player hp={5} maxHp={5} rewards={[]} />
+        <Player hp={hp} maxHp={maxHp} rewards={rewards} />
       </div>
     </main>
   );
