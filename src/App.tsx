@@ -141,7 +141,7 @@ const App = () => {
           penalty={currentCard.penalty}
         />
         <div className="controls-container">
-          <Dice value={diceValue} onRoll={rollDice} />
+          <Dice value={diceValue} onRoll={rollDice} disabled={diceValue !== null} />
           <Buttons onFight={handleFight} onFlee={handleFlee}/>
         </div>
       </div>
